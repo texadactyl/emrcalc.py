@@ -3,7 +3,7 @@ Electromagnetic Radiation (EMR) Calculator
 
 #### Overview
 
-This is a Python 3 Tkinter GUI to facilitate the following EMR calculations which I found useful as a student of Astrophysics:
+This project implements a Python 3 Tkinter GUI to facilitate the following EMR calculations which I find useful as a student of Astrophysics:
 - Conversion between Energy, Frequency, and Wavelength
 - Change the units of any of those 3 characteristics
 
