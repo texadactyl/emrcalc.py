@@ -1,0 +1,16 @@
+emrcalc_utilities.py EMR_TABLE references:
+    https://www.nasa.gov/directorates/heo/scan/communications/outreach/funfacts/txt_band_designators.html
+    https://www.nasa.gov/directorates/heo/scan/news_coordinating_spectrum_to_enable_future_missions.html
+    Each entry: [upper boundary frequency, brief description]
+
+On-line light wave calculators:
+    https://www2.chemistry.msu.edu/faculty/reusch/virttxtjml/cnvcalc.htm
+    https://www.1728.org/freqwave.htm
+
+Python3/Tk interface: 
+    https://docs.python.org/3/library/tkinter.html
+
+Examples:
+    https://python-forum.io/Thread-Tkinter-Getting-Tkinter-Grid-Sizing-Right-the-first-time
+    https://tkdocs.com/tutorial/grid.html
+
