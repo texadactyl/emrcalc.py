@@ -5,7 +5,7 @@ Electromagnetic Radiation (EMR) Calculator
 
 This is a Python 3 GUI to facilitate the following EMR calculations:
 - Conversion between Energy, Frequency, and Wavelength
-- Changing the units of any of those 3 characteristics
+- Change the units of any of those 3 characteristics
 
 The package itself can be resident in a pip3 repository, Anaconda3 repository, or stored in a directory via download from github.
 
