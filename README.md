@@ -14,6 +14,14 @@ Some special files in addition to the source code:
 - ```SCREENSHOT.png``` - a sample screenshot
 - ```url.txt``` - URLs to background information
 
+#### Dependencies:
+
+```
+numpy
+scipy
+tkinter
+```
+
 #### Invocation from the command-line:
 
 ```
