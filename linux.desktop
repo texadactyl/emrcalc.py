@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=emrcalc
+Comment=EMR Calculator
+Exec=bash -ci "./run.sh"
+Icon=/home/<user name>/emrcalc-master/emrcalc.png
+Path=/home/<user name>/emrcalc-master
+Terminal=false
+StartupNotify=false
