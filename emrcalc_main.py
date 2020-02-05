@@ -9,8 +9,10 @@ from emrcalc_state import EMR_Calc_State
 
 # ----------------------------------------------------------
 # Global variables
-main_window = None
-state_obj = None
+REQUIRED_MAJOR = 3
+REQUIRED_MINOR = 7
+MAIN_WINDOW = None
+STATE_OBJECT = None
 
 def oops(arg_string):
     """
@@ -23,42 +25,42 @@ def initialization():
     """
     Initialize the process.
     """
-    global state_obj
-
     ### Must be a main program
     if __name__ != "__main__":
         oops("initialization: Must be a main program")
 
     ### Must be Python 3.x
-    if sys.version_info[0] < 3:
-        oops("initialization: Requires Python 3")
+    if sys.version_info.major < REQUIRED_MAJOR \
+    or sys.version_info.minor < REQUIRED_MINOR:
+        oops("initialization: Requires Python {}.{} or higher."
+             .format(REQUIRED_MAJOR, REQUIRED_MINOR))
 
     ### Start with visible green
     frequency = 540e12 # Hz
     desc, energy, wavelen = utl.freq2info(frequency)
-    state_obj = EMR_Calc_State(desc, energy, frequency, wavelen)
+    state_object = EMR_Calc_State(desc, energy, frequency, wavelen)
 
     ### Initialize all of the Tk objects that will be needed
-    window = init_tk_objects(state_obj)
+    window = init_tk_objects(state_object)
 
     ### Done, return logger handle to caller
-    if state_obj.FLAG_TRACING:
+    if state_object.FLAG_TRACING:
         print("intialization:TRACE: End")
-    return window
+    return state_object, window
 
 # ----------------------------------------------------------
 # MAIN PROGRAM
 # ----------------------------------------------------------
 ### Call process initialization.
-main_window = initialization()
+STATE_OBJECT, MAIN_WINDOW = initialization()
 
 # ----------------------------------------------------------
 ### Enter Tk mainloop
-if state_obj.FLAG_TRACING:
+if STATE_OBJECT.FLAG_TRACING:
     print("main:TRACE: Will now enter window mainloop")
-main_window.mainloop()
+MAIN_WINDOW.mainloop()
 
 # ----------------------------------------------------------
 ### Left Tk mainloop
-if state_obj.FLAG_TRACING:
+if STATE_OBJECT.FLAG_TRACING:
     print("main:TRACE: Just now exited window mainloop")
