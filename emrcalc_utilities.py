@@ -21,7 +21,7 @@ J2EV = 1. / sc.value(u'electron volt-joule relationship')
 """
 Float-F formatter, used in float2str()
 """
-fformatter = lambda arg_float: "{0:f}".format(arg_float).rstrip("0").rstrip(".")
+FFORMATTER = lambda arg_float: "{0:f}".format(arg_float).rstrip("0").rstrip(".")
 
 """
 Table of frequency in Hz and corresponding descriptive text
@@ -98,7 +98,7 @@ def float2str(arg_scalar, arg_n):
         return "0"
     value = round(scalar, arg_n - int(floor(log10(abs(scalar)))) - 1)
     if 1e-5 <= value <= 1e5:
-        return fformatter(value)
+        return FFORMATTER(value)
     return "{:.5G}".format(value)
 
 def freq2info(arg_freq):
