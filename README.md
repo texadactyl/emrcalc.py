@@ -32,7 +32,7 @@ python3   emrcalc_main.py
 
 #### Desktop Shortcut Example
 
-I created a ```linux.desktop``` file, suitable for Xfce, Gnome, KDE, etc. on Linux.  I have no access to Windows so I could not create an equivalent.  When I get some time, I'll create one for my spouse's Mac desktop.
+I created a ```linux.desktop``` file, suitable for Xfce, Gnome, KDE, etc. on Linux.  I have no access to Windows so I could not create an equivalent.  When I get some time, I'll create one for my spouse's Mac desktop ("alias").
 
 Before using, be sure to replace "/home/\<user name\>" with the folder name where the contents are stored.
 
