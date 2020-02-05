@@ -11,6 +11,7 @@ The package itself can be placed in a pip3 repository, Anaconda3 repository, or 
 
 Some special files in addition to the source code:
 - ```HISTORY.txt``` - the update history
+- ```linux.desktop``` - Linux desktop file example - see section Desktop Shortcut Example below
 - ```SCREENSHOT.png``` - a sample screenshot
 - ```url.txt``` - URLs to background information
 
@@ -33,7 +34,7 @@ python3   emrcalc_main.py
 
 I created a ```linux.desktop``` file, suitable for Xfce, Gnome, KDE, etc. on Linux.  I have no access to Windows so I could not create an equivalent.  When I get some time, I'll create one for my spouse's Mac desktop.
 
-Before using, be sure to replace "/home/<user name>" with the folder name where the contents are stored.
+Before using, be sure to replace "/home/\<user name\>" with the folder name where the contents are stored.
 
 #### Licensing
 
