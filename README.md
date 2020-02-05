@@ -23,7 +23,7 @@ tkinter
 tkinter.ttk
 ```
 
-#### Invocation from the command-line:
+#### Invocation from the command-line while positioned in the folder where the source code is located:
 
 ```
 python3   emrcalc_main.py
