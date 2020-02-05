@@ -20,6 +20,7 @@ Some special files in addition to the source code:
 numpy
 scipy
 tkinter
+tkinter.ttk
 ```
 
 #### Invocation from the command-line:
