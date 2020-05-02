@@ -1,5 +1,5 @@
 v1.1
 ====
 
+2020-05-02  Added kJ/mol calculations and put version in Tk frame title.
 2019-08-11  First version.
-2020-05-02  Added kJ/mol calculations.
