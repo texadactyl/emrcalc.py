@@ -13,6 +13,7 @@ REQUIRED_MAJOR = 3
 REQUIRED_MINOR = 7
 MAIN_WINDOW = None
 STATE_OBJECT = None
+VERSION = "rubbish"
 
 def oops(arg_string):
     """
@@ -41,7 +42,8 @@ def initialization():
     state_object = EMR_Calc_State(desc, energy, frequency, wavelen)
 
     ### Initialize all of the Tk objects that will be needed
-    window = init_tk_objects(state_object)
+    VERSION = open("VERSION.txt").read()
+    window = init_tk_objects(state_object, VERSION)
 
     ### Done, return logger handle to caller
     if state_object.FLAG_TRACING:

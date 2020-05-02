@@ -17,11 +17,19 @@ WIDTH_FLOAT = 12
 WIDTH_UNITS = 3
 FONT_GENERAL = ("Ariel", 12, "normal")
 FONT_LABEL = ("Ariel", 12, "normal")
+
+# Energy units
+UNITS_J = "J"
+UNITS_KJ = "kJ"
 UNITS_EV = "eV"
+
+# Wavelength units
 UNITS_METERS = "m"
 UNITS_MICRONS = "μm"
 UNITS_NM = "nm"
 UNITS_ANGSTROMS = "Å"
+
+# Frequency units
 UNITS_HZ = "Hz"
 UNITS_MHZ = "MHz"
 UNITS_GHZ = "Ghz"
@@ -30,6 +38,7 @@ UNITS_GHZ = "Ghz"
 ENTRY_ENERGY = None
 ENTRY_FREQ = None
 ENTRY_WVLEN = None
+TEXT_KJMOL = None
 TEXT_DESC = None
 TEXT_STATUS = None
 SPINBOX_ENERGY = None
@@ -57,18 +66,25 @@ def refresh_all_display_values():
     """
     Update Tk display from the normalized values in the state object.
     """
-    global STATE_OBJECT, ENTRY_FREQ, ENTRY_WVLEN, ENTRY_ENERGY, TEXT_DESC
+    global STATE_OBJECT, ENTRY_FREQ, ENTRY_WVLEN, ENTRY_ENERGY, TEXT_KJMOL, TEXT_DESC
 
     if STATE_OBJECT.FLAG_TRACING:
         print("refresh_all_display_values:TRACE: Begin")
 
     # --- Energy
-    if STATE_OBJECT.disp_units_energy == UNITS_EV:
+    if STATE_OBJECT.disp_units_energy == UNITS_J:
         STATE_OBJECT.disp_value_energy = STATE_OBJECT.norm_value_energy
-    else: # Joules
-        STATE_OBJECT.disp_value_energy = STATE_OBJECT.norm_value_energy / J2EV
+    else:
+        if STATE_OBJECT.disp_units_energy == UNITS_KJ:
+            STATE_OBJECT.disp_value_energy = STATE_OBJECT.norm_value_energy / 1e3
+        else: # eV
+            STATE_OBJECT.disp_value_energy = STATE_OBJECT.norm_value_energy * J2EV
     ENTRY_ENERGY.delete(0, tk.END)
     ENTRY_ENERGY.insert(0, float2str(STATE_OBJECT.disp_value_energy, SIGFIG))
+
+    # --- kJ/mol (energy density)
+    STATE_OBJECT.update_kJ_per_mol()
+    TEXT_KJMOL["text"] = float2str(STATE_OBJECT.kJ_per_mol, SIGFIG)
 
     # --- Frequency
     if STATE_OBJECT.disp_units_freq == UNITS_HZ:
@@ -215,12 +231,12 @@ def proc_wvlen_units():
     refresh_all_display_values()
     ENTRY_WVLEN.focus_set()
 
-def init_tk_objects(arg_state_object):
+def init_tk_objects(arg_state_object, arg_version):
     """
     Present the operator with a set of buttons.
     """
     global WINDOW, STATE_OBJECT, \
-        ENTRY_FREQ, ENTRY_WVLEN, ENTRY_ENERGY, TEXT_DESC, TEXT_STATUS, \
+        ENTRY_FREQ, ENTRY_WVLEN, ENTRY_ENERGY, TEXT_KJMOL, TEXT_DESC, TEXT_STATUS, \
         SPINBOX_FREQ, SPINBOX_WVLEN, SPINBOX_ENERGY
 
     STATE_OBJECT = arg_state_object
@@ -233,7 +249,7 @@ def init_tk_objects(arg_state_object):
     # Create window.
     WINDOW = tk.Tk()
     WINDOW.attributes("-fullscreen", False)
-    WINDOW.title("EMR Calculator")
+    WINDOW.title("EMR Calculator v" + arg_version)
     WINDOW.columnconfigure(0, weight=1)
 
     # Change default fonts.
@@ -292,12 +308,19 @@ def init_tk_objects(arg_state_object):
     SPINBOX_ENERGY.set(STATE_OBJECT.disp_units_energy)
     SPINBOX_ENERGY.grid(column=3, row=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
 
+    # Set up kJ/mol row.
+    label_desc = ttk.Label(frame1, text="kJ/mol:")
+    label_desc.grid(column=0, row=4, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
+    TEXT_KJMOL = tk.Label(frame1, justify=tk.CENTER)
+    TEXT_KJMOL["text"] = float2str(STATE_OBJECT.kJ_per_mol, SIGFIG)
+    TEXT_KJMOL.grid(column=1, row=4, columnspan=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
+
     # Set up description row.
     label_desc = ttk.Label(frame1, text="EMR Band:")
-    label_desc.grid(column=0, row=4, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
+    label_desc.grid(column=0, row=5, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
     TEXT_DESC = tk.Label(frame1, justify=tk.CENTER)
     TEXT_DESC["text"] = str(STATE_OBJECT.band_desc)
-    TEXT_DESC.grid(column=1, row=4, columnspan=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
+    TEXT_DESC.grid(column=1, row=5, columnspan=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
 
     # Set up buttons.
     button_quit = ttk.Button(frame1, text="Quit", command=destroyer)
