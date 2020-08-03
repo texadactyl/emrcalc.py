@@ -9,11 +9,10 @@ This project implements a Python 3.7+ Tkinter GUI to facilitate the following EM
 
 The package itself can be placed in a pip3 repository, Anaconda3 repository, or simply stored in a directory via download from github.
 
-Some special files in addition to the source code:
+Some special files in addition to the emrcalc/*.py source code:
 - ```HISTORY.txt``` - the update history
-- ```linux.desktop``` - Linux desktop file example - see section Desktop Shortcut Example below
-- ```SCREENSHOT.png``` - a sample screenshot
-- ```url.txt``` - URLs to background information
+- ```misc/SCREENSHOT.png``` - a sample screenshot
+- ```misc/url.txt``` - URLs to background information
 
 #### Dependencies
 
@@ -29,12 +28,6 @@ tkinter.ttk
 ```
 python3   emrcalc_main.py
 ```
-
-#### Desktop Shortcut Example
-
-I created a ```linux.desktop``` file, suitable for Xfce, Gnome, KDE, etc. on Linux.  I have no access to Windows so I could not create an equivalent.  When I get some time, I'll create one for my spouse's Mac desktop ("alias").
-
-Before using, be sure to replace "/home/\<user name\>" with the folder name where the contents are stored.
 
 #### Licensing
 
