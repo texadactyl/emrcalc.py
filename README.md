@@ -21,14 +21,20 @@ Some special files in addition to the emrcalc/*.py source code:
 ```
 numpy
 scipy
-tkinter
-tkinter.ttk
+tkinter - included with Python 3
+tkinter.ttk - included with Python 3
 ```
 
-#### Invocation from the command-line while positioned in the folder where the source code is located:
+#### Installation
 
 ```
-python3   emrcalc_main.py
+python3 git+https://github.com/texadactyl/emrcalc
+```
+
+#### Invocation from a terminal window command-line
+
+```
+emrcalc
 ```
 
 #### Licensing
