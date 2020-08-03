@@ -4,11 +4,8 @@ EMR Calculator Main Program
 
 import sys
 from pkg_resources import get_distribution, DistributionNotFound
-try:
-    __version__ = get_distribution('emrcalc').version
-except DistributionNotFound:
-    __version__ = '*NOT INSTALLED*'
 
+from emrcalc import __version__
 import emrcalc.emrcalc_utilities as utl
 from emrcalc.emrcalc_tk import init_tk_objects
 from emrcalc.emrcalc_state import EMR_Calc_State
