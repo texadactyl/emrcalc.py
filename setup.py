@@ -11,7 +11,7 @@ setup.py -- setup script for installing a python3-pip package.
 # twine upload dist/*
 
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 __version__ = "1.2.0"
 
@@ -35,10 +35,11 @@ setup(
     license="GNU General Public License Version 3",
     install_requires=install_requires,
     entry_points=entry_points,
+    packages=find_packages(),
     author="Richard Elkins",
     author_email="richard.elkins@gmail.com",
     description="Electromagnetic Radiation Calculator",
-    keywords="astronomy, chemistry, physics",
+    keywords="astronomy chemistry physics",
     url="https://github.com/texadactyl/emrcalc",
     zip_safe=False,
     options={"bdist_wheel": {"universal": "1"}},
