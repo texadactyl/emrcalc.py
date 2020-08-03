@@ -28,7 +28,7 @@ tkinter.ttk - included with Python 3
 #### Installation
 
 ```
-python3 git+https://github.com/texadactyl/emrcalc
+python3 -m pip emrcalc
 ```
 
 #### Invocation from a terminal window command-line
