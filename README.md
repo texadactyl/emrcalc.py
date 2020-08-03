@@ -10,8 +10,6 @@ This project implements a Python 3.7+ Tkinter GUI to facilitate the following EM
 - Display of the related EMR band as defined by NASA.
 - Automatic update of quantities and EMR band name after editing.
 
-The package itself can be placed in a pip3 repository, Anaconda3 repository, or simply stored in a directory via download from github.
-
 Some special files in addition to the emrcalc/*.py source code:
 - ```HISTORY.txt``` - the update history
 - ```misc/SCREENSHOT.png``` - a sample screenshot
