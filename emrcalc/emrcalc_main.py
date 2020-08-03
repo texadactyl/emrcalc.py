@@ -3,7 +3,6 @@ EMR Calculator Main Program
 """
 
 import sys
-from pkg_resources import get_distribution, DistributionNotFound
 
 from emrcalc import __version__
 import emrcalc.emrcalc_utilities as utl
