@@ -13,7 +13,7 @@ setup.py -- setup script for installing a python3-pip package.
 
 from setuptools import setup, find_packages
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
