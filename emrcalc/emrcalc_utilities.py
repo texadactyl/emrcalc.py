@@ -72,17 +72,24 @@ def dump_pyobject(arg_subject, arg_object):
         if hasattr(arg_object, attr):
             print("%s.%s = %s" % (arg_subject, attr, getattr(arg_object, attr)))
 
+def wvlen2num(arg_wvlen):
+    return 1 / arg_wvlen
+
+def wvnum2len(arg_wvnum):
+    return 1 / arg_wvnum
+
 def energy2info(arg_energy):
     """
     Given energy (J),
-    return a brief description, frequency (Hz), & wavelength (meters).
+    return a brief description, frequency (Hz), wavelength (m), wave number (1/m).
     """
     freq = arg_energy / sc.h
     wavelength = sc.c / freq
+    wavenum = wvlen2num(wavelength)
     for row_freq, row_desc in EMR_TABLE:
         if freq < row_freq:
-            return row_desc, freq, wavelength
-    return "Cosmic ray", freq, wavelength
+            return row_desc, freq, wavelength, wavenum
+    return "Cosmic ray", freq, wavelength, wavenum
 
 def float2str(arg_scalar, arg_n):
     '''
@@ -104,35 +111,37 @@ def float2str(arg_scalar, arg_n):
 def freq2info(arg_freq):
     """
     Given a frequency (Hz),
-    return a brief description, energy (J), & wavelength (meters).
+    return a brief description, energy (J), wavelength (m), wave number(1/m).
     """
     wavelength = sc.c / arg_freq
+    wavenum = wvlen2num(wavelength)
     joules = sc.h * arg_freq
     for row_freq, row_desc in EMR_TABLE:
         if arg_freq < row_freq:
-            return row_desc, joules, wavelength
-    return "Gamma", joules, wavelength
+            return row_desc, joules, wavelength, wavenum
+    return "Gamma", joules, wavelength, wavenum
 
 def wvlen2info(arg_wvlen):
     """
     Given a wavelength (meters),
-    return a brief description, energy (J), & frequency (Hz).
+    return a brief description, energy (J), frequency (Hz), wave number(m).
     """
+    wavenum = wvlen2num(arg_wvlen)
     freq = sc.c / arg_wvlen
     joules = sc.h * freq
     for row_freq, row_desc in EMR_TABLE:
         if freq < row_freq:
-            return row_desc, joules, freq
-    return "Cosmic ray", joules, freq
+            return row_desc, joules, freq, wavenum
+    return "Cosmic ray", joules, freq, wavenum
 
 def test_nm_to_info(arg_nm):
     """
-    Given a wavelength (nm), show brief description, frequency (Hz), and energy (eV).
+    Given a wavelength (nm), show brief description, frequency (Hz), energy (eV), wave number(m).
     """
-    xdesc, xfreq, xjoules = wvlen2info(arg_nm / 1.0e9)
-    print("{} nm --> {}, {:.3e} Hz, {:.3f} J".format(arg_nm, xdesc, xfreq, xjoules))
+    xdesc, xfreq, xjoules, xwvnum = wvlen2info(arg_nm / 1.0e9)
+    print("{} nm --> {}, {:.3e} Hz, {:.3f} J, {:.3f} m^-1".format(arg_nm, xdesc, xfreq, xjoules, xwvnum))
 
-def test1():
+if __name__ == "__main__":
     """
     testing 1-2-3
     """

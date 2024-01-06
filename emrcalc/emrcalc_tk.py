@@ -2,7 +2,7 @@
 emrcalc Tk procedures
 """
 import tkinter as tk
-import tkinter.ttk as ttk
+from tkinter import ttk
 
 from emrcalc.emrcalc_utilities import float2str, freq2info, energy2info, wvlen2info, J2EV
 
@@ -14,7 +14,7 @@ STATUS_OK = "Everything is nominal, Captain."
 STATUS_OOPS = "This makes no sense, Captain: "
 STYLE_FRAME1 = "My.TFrame"
 WIDTH_FLOAT = 12
-WIDTH_UNITS = 3
+WIDTH_UNITS = 4
 FONT_GENERAL = ("Ariel", 12, "normal")
 FONT_LABEL = ("Ariel", 12, "normal")
 
@@ -29,29 +29,34 @@ UNITS_MICRONS = "μm"
 UNITS_NM = "nm"
 UNITS_ANGSTROMS = "Å"
 
+# wavenumber units
+UNITS_IM = "1/m"
+UNITS_ICM = "1/cm"
+
 # Frequency units
 UNITS_HZ = "Hz"
 UNITS_MHZ = "MHz"
 UNITS_GHZ = "Ghz"
 
-# Global variables:
+# Other global variables:
 ENTRY_ENERGY = None
 ENTRY_FREQ = None
 ENTRY_WVLEN = None
-TEXT_KJMOL = None
-TEXT_DESC = None
-TEXT_STATUS = None
+ENTRY_WVNUM = None
 SPINBOX_ENERGY = None
 SPINBOX_FREQ = None
 SPINBOX_WVLEN = None
+SPINBOX_WVNUM = None
 STATE_OBJECT = None
+TEXT_KJMOL = None
+TEXT_DESC = None
+TEXT_STATUS = None
 WINDOW = None
 
 def destroyer():
     """
     Operator selected to quit to the O/S.
     """
-    global WINDOW
 
     if STATE_OBJECT.FLAG_TRACING:
         print("destroyer:TRACE: Begin")
@@ -66,7 +71,7 @@ def refresh_all_display_values():
     """
     Update Tk display from the normalized values in the state object.
     """
-    global STATE_OBJECT, ENTRY_FREQ, ENTRY_WVLEN, ENTRY_ENERGY, TEXT_KJMOL, TEXT_DESC
+    global STATE_OBJECT, ENTRY_FREQ, ENTRY_WVLEN, ENTRY_WVNUM, ENTRY_ENERGY, TEXT_KJMOL, TEXT_DESC
 
     if STATE_OBJECT.FLAG_TRACING:
         print("refresh_all_display_values:TRACE: Begin")
@@ -111,6 +116,14 @@ def refresh_all_display_values():
     ENTRY_WVLEN.delete(0, tk.END)
     ENTRY_WVLEN.insert(0, float2str(STATE_OBJECT.disp_value_wvlen, SIGFIG))
 
+    # --- wavenumber
+    if STATE_OBJECT.disp_units_wvnum == UNITS_IM:
+        STATE_OBJECT.disp_value_wvnum = STATE_OBJECT.norm_value_wvnum
+    else: # 1/cm
+        STATE_OBJECT.disp_value_wvnum = STATE_OBJECT.norm_value_wvnum / 100
+    ENTRY_WVNUM.delete(0, tk.END)
+    ENTRY_WVNUM.insert(0, float2str(STATE_OBJECT.disp_value_wvnum, SIGFIG))
+
     # --- Band descriptor
     TEXT_DESC["text"] = str(STATE_OBJECT.band_desc)
 
@@ -134,7 +147,8 @@ def proc_energy_value():
         # Recompute desc, frequency, & wavelength based on normalized energy
         STATE_OBJECT.band_desc, \
             STATE_OBJECT.norm_value_freq, \
-            STATE_OBJECT.norm_value_wvlen = energy2info(STATE_OBJECT.norm_value_energy)
+            STATE_OBJECT.norm_value_wvlen, \
+            STATE_OBJECT.norm_value_wvnum = energy2info(STATE_OBJECT.norm_value_energy)
         refresh_all_display_values()
         TEXT_STATUS['text'] = STATUS_OK
     except:
@@ -159,7 +173,8 @@ def proc_freq_value():
         # Recompute desc, energy, & wavelength based on normalized energy
         STATE_OBJECT.band_desc, \
             STATE_OBJECT.norm_value_energy, \
-            STATE_OBJECT.norm_value_wvlen = freq2info(STATE_OBJECT.norm_value_freq)
+            STATE_OBJECT.norm_value_wvlen, \
+            STATE_OBJECT.norm_value_wvnum = freq2info(STATE_OBJECT.norm_value_freq)
         refresh_all_display_values()
         TEXT_STATUS['text'] = STATUS_OK
     except:
@@ -184,13 +199,41 @@ def proc_wvlen_value():
         # Recompute desc, energy, & wavelength based on normalized energy
         STATE_OBJECT.band_desc, \
             STATE_OBJECT.norm_value_energy, \
-            STATE_OBJECT.norm_value_freq = wvlen2info(STATE_OBJECT.norm_value_wvlen)
+            STATE_OBJECT.norm_value_freq, \
+            STATE_OBJECT.norm_value_wvnum = wvlen2info(STATE_OBJECT.norm_value_wvlen)
         refresh_all_display_values()
         TEXT_STATUS['text'] = STATUS_OK
     except:
         TEXT_STATUS['text'] = STATUS_OOPS + new_str_value
     if STATE_OBJECT.FLAG_TRACING:
         print("proc_wvlen_value:TRACE: End")
+
+def proc_wvnum_value():
+    """
+    The operator modified the wavenumber value.
+    """
+    global STATE_OBJECT, ENTRY_WVNUM, TEXT_STATUS
+
+    if STATE_OBJECT.FLAG_TRACING:
+        print("proc_wvnum_value:TRACE: Begin")
+    new_str_value = ENTRY_WVNUM.get()
+    try:
+        new_float_value = float(new_str_value)
+        # new norm = old norm * ( new disp / old disp)
+        STATE_OBJECT.norm_value_wvlen = STATE_OBJECT.norm_value_wvnum \
+            * new_float_value / STATE_OBJECT.disp_value_wvnum
+        STATE_OBJECT.norm_value_wvlen = 1 / STATE_OBJECT.norm_value_wvlen
+        # Recompute desc, energy, & wavelength based on normalized energy
+        STATE_OBJECT.band_desc, \
+            STATE_OBJECT.norm_value_energy, \
+            STATE_OBJECT.norm_value_freq, \
+            STATE_OBJECT.norm_value_wvnum = wvlen2info(STATE_OBJECT.norm_value_wvlen)
+        refresh_all_display_values()
+        TEXT_STATUS['text'] = STATUS_OK
+    except:
+        TEXT_STATUS['text'] = STATUS_OOPS + new_str_value
+    if STATE_OBJECT.FLAG_TRACING:
+        print("proc_wvnum_value:TRACE: End")
 
 def proc_energy_units():
     """
@@ -231,19 +274,33 @@ def proc_wvlen_units():
     refresh_all_display_values()
     ENTRY_WVLEN.focus_set()
 
+def proc_wvnum_units():
+    """
+    The operator modified the wavelength units.
+    """
+    global STATE_OBJECT, ENTRY_WVNUM, SPINBOX_WVNUM
+
+    new_units = SPINBOX_WVNUM.get()
+    if new_units == STATE_OBJECT.disp_units_wvnum:
+        return
+    STATE_OBJECT.disp_units_wvnum = new_units
+    refresh_all_display_values()
+    ENTRY_WVNUM.focus_set()
+
 def init_tk_objects(arg_state_object, arg_version):
     """
     Present the operator with a set of buttons.
     """
     global WINDOW, STATE_OBJECT, \
-        ENTRY_FREQ, ENTRY_WVLEN, ENTRY_ENERGY, TEXT_KJMOL, TEXT_DESC, TEXT_STATUS, \
-        SPINBOX_FREQ, SPINBOX_WVLEN, SPINBOX_ENERGY
+        ENTRY_FREQ, ENTRY_WVLEN, ENTRY_WVNUM, ENTRY_ENERGY, TEXT_KJMOL, TEXT_DESC, TEXT_STATUS, \
+        SPINBOX_FREQ, SPINBOX_WVLEN, SPINBOX_WVNUM, SPINBOX_ENERGY
 
     STATE_OBJECT = arg_state_object
     if STATE_OBJECT.FLAG_TRACING:
-        print("init_tk_objects:TRACE: Begin, {} {} {}"
+        print("init_tk_objects:TRACE: Begin, {} {} {} {}"
               .format(STATE_OBJECT.disp_value_freq, \
                       STATE_OBJECT.disp_value_wvlen, \
+                      STATE_OBJECT.disp_value_wvnum, \
                       STATE_OBJECT.disp_value_energy))
 
     # Create window.
@@ -295,32 +352,45 @@ def init_tk_objects(arg_state_object, arg_version):
     SPINBOX_WVLEN.set(STATE_OBJECT.disp_units_wvlen)
     SPINBOX_WVLEN.grid(column=3, row=2, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
 
+    # Set up wavenumber row.
+    label_wvnum = ttk.Label(frame1, text="Wavenumber:")
+    label_wvnum.grid(column=0, row=3, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
+    ENTRY_WVNUM = ttk.Entry(frame1, width=WIDTH_FLOAT, justify=tk.RIGHT)
+    ENTRY_WVNUM.insert(0, float2str(STATE_OBJECT.disp_value_wvnum, SIGFIG))
+    ENTRY_WVNUM.grid(column=1, row=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
+    button_wvnum = ttk.Button(frame1, text="Update", command=proc_wvnum_value)
+    button_wvnum.grid(column=2, row=3, padx=PAD_HORZ, pady=PAD_VERT)
+    SPINBOX_WVNUM = ttk.Spinbox(frame1, width=WIDTH_UNITS, command=proc_wvnum_units)
+    SPINBOX_WVNUM['values'] = STATE_OBJECT.list_units_wvnum
+    SPINBOX_WVNUM.set(STATE_OBJECT.disp_units_wvnum)
+    SPINBOX_WVNUM.grid(column=3, row=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
+
     # Set up energy row.
     label_energy = ttk.Label(frame1, text="Energy:")
-    label_energy.grid(column=0, row=3, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
+    label_energy.grid(column=0, row=4, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
     ENTRY_ENERGY = ttk.Entry(frame1, width=WIDTH_FLOAT, justify=tk.RIGHT)
     ENTRY_ENERGY.insert(0, float2str(STATE_OBJECT.disp_value_energy, SIGFIG))
-    ENTRY_ENERGY.grid(column=1, row=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
+    ENTRY_ENERGY.grid(column=1, row=4, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
     button_energy = ttk.Button(frame1, text="Update", command=proc_energy_value)
-    button_energy.grid(column=2, row=3, padx=PAD_HORZ, pady=PAD_VERT)
+    button_energy.grid(column=2, row=4, padx=PAD_HORZ, pady=PAD_VERT)
     SPINBOX_ENERGY = ttk.Spinbox(frame1, width=WIDTH_UNITS, command=proc_energy_units)
     SPINBOX_ENERGY['values'] = STATE_OBJECT.list_units_energy
     SPINBOX_ENERGY.set(STATE_OBJECT.disp_units_energy)
-    SPINBOX_ENERGY.grid(column=3, row=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
+    SPINBOX_ENERGY.grid(column=3, row=4, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
 
     # Set up kJ/mol row.
     label_desc = ttk.Label(frame1, text="kJ/mol:")
-    label_desc.grid(column=0, row=4, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
+    label_desc.grid(column=0, row=5, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
     TEXT_KJMOL = tk.Label(frame1, justify=tk.CENTER)
     TEXT_KJMOL["text"] = float2str(STATE_OBJECT.kJ_per_mol, SIGFIG)
-    TEXT_KJMOL.grid(column=1, row=4, columnspan=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
+    TEXT_KJMOL.grid(column=1, row=5, columnspan=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
 
     # Set up description row.
     label_desc = ttk.Label(frame1, text="EMR Band:")
-    label_desc.grid(column=0, row=5, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
+    label_desc.grid(column=0, row=6, sticky=tk.E, padx=PAD_HORZ, pady=PAD_VERT)
     TEXT_DESC = tk.Label(frame1, justify=tk.CENTER)
     TEXT_DESC["text"] = str(STATE_OBJECT.band_desc)
-    TEXT_DESC.grid(column=1, row=5, columnspan=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
+    TEXT_DESC.grid(column=1, row=6, columnspan=3, padx=PAD_HORZ, pady=PAD_VERT, sticky=(tk.E, tk.W))
 
     # Set up buttons.
     button_quit = ttk.Button(frame1, text="Quit", command=destroyer)
